@@ -20,6 +20,13 @@ describe('Educational RAG response', () => {
     expect(result.sources).toEqual([]);
   });
 
+  test('requests structured Markdown and separated sections', () => {
+    const { SYSTEM_INSTRUCTION } = require('../backend/services/ragService');
+    expect(SYSTEM_INSTRUCTION).toContain('clean Markdown');
+    expect(SYSTEM_INSTRUCTION).toContain('Document-Supported Information');
+    expect(SYSTEM_INSTRUCTION).toContain('Markdown tables');
+  });
+
   test('uses document content and returns source structure', async () => {
     mockSearchChunks.mockResolvedValue([{ id: 'c1', text: 'Fog nodes extend cloud services closer to users.', metadata: { documentId: 'd1', filename: 'fog.pdf', pageNumber: 4 }, score: 0.82 }]);
     const result = await answerQuestion('What is a fog node?', ['d1']);

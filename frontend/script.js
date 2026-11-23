@@ -16,7 +16,33 @@ $('documentList').addEventListener('click',async event=>{const button=event.targ
 async function uploadFiles(files){for(const file of files){$('uploadStatus').textContent=`Uploading ${file.name}...`;const form=new FormData();form.append('pdf',file);try{await api('/documents/upload',{method:'POST',body:form});$('uploadStatus').textContent='Processing complete';await loadDocuments()}catch(error){$('uploadStatus').textContent=error.message}}}
 const zone=$('uploadZone');$('browseFiles').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>uploadFiles([...e.target.files]);['dragenter','dragover'].forEach(name=>zone.addEventListener(name,e=>{e.preventDefault();zone.classList.add('dragging')}));['dragleave','drop'].forEach(name=>zone.addEventListener(name,e=>{e.preventDefault();zone.classList.remove('dragging')}));zone.addEventListener('drop',e=>uploadFiles([...e.dataTransfer.files].filter(f=>f.name.toLowerCase().endsWith('.pdf'))));
 
-function appendMessage(role,text,sources=[]){$('welcome').style.display='none';const div=document.createElement('div');div.className=`message ${role}`;let sourceHtml=sources?.length?`<div class="sources">${sources.map((s,i)=>`<button class="source" title="Source ${i+1}">📄 ${escapeHtml(s.filename)}${s.pageNumber?` · p. ${s.pageNumber}`:''}</button>`).join('')}</div>`:'';div.innerHTML=`<div class="bubble">${role==='assistant'?escapeHtml(text).replace(/\n/g,'<br>'):escapeHtml(text)}${sourceHtml}</div>`;$('messages').appendChild(div);$('chatPanel').querySelector('.messages').scrollTop=$('messages').scrollHeight}
+function renderAssistantMarkdown(text) {
+  if (!window.marked || !window.DOMPurify) {
+    const fallback = document.createElement('div');
+    fallback.textContent = text;
+    return fallback.innerHTML;
+  }
+  window.marked.setOptions({ gfm: true, breaks: false, mangle: false, headerIds: false });
+  const rendered = window.marked.parse(text || '');
+  return window.DOMPurify.sanitize(rendered, {
+    USE_PROFILES: { html: true },
+    FORBID_TAGS: ['style', 'iframe', 'object', 'embed', 'form', 'input'],
+    FORBID_ATTR: ['style', 'onerror', 'onclick', 'onload']
+  });
+}
+
+function appendMessage(role,text,sources=[]){
+  $('welcome').style.display='none';
+  const div=document.createElement('div');
+  div.className=`message ${role}`;
+  const sourceHtml=sources?.length?`<div class="sources">${sources.map((s,i)=>`<button class="source" title="Source ${i+1}">📄 ${escapeHtml(s.filename)}${s.pageNumber?` · p. ${s.pageNumber}`:''}</button>`).join('')}</div>`:'';
+  const body = role === 'assistant'
+    ? `<div class="markdown-body">${renderAssistantMarkdown(text)}</div>`
+    : escapeHtml(text);
+  div.innerHTML=`<div class="bubble">${body}${sourceHtml}</div>`;
+  $('messages').appendChild(div);
+  $('chatPanel').querySelector('.messages').scrollTop=$('messages').scrollHeight;
+}
 function showTyping(){const div=document.createElement('div');div.id='typing';div.className='message assistant';div.innerHTML='<div class="bubble typing"><i></i><i></i><i></i></div>';$('messages').appendChild(div);$('messages').scrollTop=$('messages').scrollHeight}
 
 $('chatForm').addEventListener('submit',async event=>{event.preventDefault();const input=$('questionInput');const question=input.value.trim();if(!question)return;appendMessage('user',question);input.value='';$('sendButton').disabled=true;showTyping();try{const data=await api('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question,conversationId,documentIds:selectedDocumentIds.size?[...selectedDocumentIds]:null})});conversationId=data.conversationId;$('typing')?.remove();appendMessage('assistant',data.answer,data.sources)}catch(error){$('typing')?.remove();appendMessage('assistant',`I couldn't complete that request: ${error.message}`)}finally{$('sendButton').disabled=false}});

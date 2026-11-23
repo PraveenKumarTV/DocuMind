@@ -41,6 +41,8 @@ app.use('/api/health', async (req, res) => {
   });
 });
 
+app.use('/vendor/marked', express.static(path.join(__dirname, '..', 'node_modules', 'marked', 'lib')));
+app.use('/vendor/dompurify', express.static(path.join(__dirname, '..', 'node_modules', 'dompurify', 'dist')));
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html')));
 app.use(notFound);
