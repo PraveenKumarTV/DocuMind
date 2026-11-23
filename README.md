@@ -2,6 +2,9 @@
 
 DocuMind is a PDF RAG assistant using Gemini for embeddings and answers, and Qdrant Cloud for persistent vector search.
 
+## Live Link
+https://documind-9m19.onrender.com/
+
 ## Architecture
 
 ```mermaid
