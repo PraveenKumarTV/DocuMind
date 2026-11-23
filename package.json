@@ -1,0 +1,37 @@
+{
+  "name": "documind",
+  "version": "1.0.0",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:qdrant": "jest test/qdrant.integration.test.js --runInBand"
+  },
+  "keywords": [
+    "rag",
+    "gemini",
+    "qdrant",
+    "qdrant-cloud",
+    "pdf"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^2.0.0",
+    "@qdrant/js-client-rest": "^1.16.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "multer": "^2.0.2",
+    "pdf-parse": "^1.1.1",
+    "uuid": "^11.1.0"
+  },
+  "description": "RAG PDF assistant powered by Gemini and Qdrant Cloud",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.3"
+  }
+}

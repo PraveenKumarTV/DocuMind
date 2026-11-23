@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuMind</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">D</div><span>DocuMind</span></div>
+      <button class="new-chat" id="newChat"><span>＋</span> New Chat</button>
+      <section class="documents-section">
+        <div class="section-heading"><span>Documents</span><span class="count" id="documentCount">0</span></div>
+        <div id="documentList" class="document-list"></div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
+          <div class="upload-icon">↥</div><strong>Drop PDFs here</strong><span>or</span>
+          <button id="browseFiles" type="button">Browse files</button>
+          <small id="uploadStatus">PDF, up to 10 MB</small>
+        </div>
+      </section>
+      <div class="connection"><i id="connectionDot"></i><span id="connectionText">Checking connection</span></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar"><div><p class="eyebrow">AI document assistant</p><h1 id="chatTitle">New conversation</h1></div><button class="menu-button" id="clearChat" title="Clear chat">···</button></header>
+      <section class="chat-panel" id="chatPanel">
+        <div class="welcome" id="welcome">
+          <div class="welcome-icon">✦</div><h2>Welcome to DocuMind</h2>
+          <p>Upload a PDF, then ask questions grounded in its content.</p>
+          <div class="suggestions"><button>Summarize the main ideas</button><button>What are the key findings?</button><button>Explain this document simply</button></div>
+        </div>
+        <div class="messages" id="messages"></div>
+      </section>
+      <footer class="composer-wrap">
+        <div class="scope-bar" id="scopeBar"><span>Search across</span><strong id="scopeLabel">All documents</strong></div>
+        <form class="composer" id="chatForm">
+          <textarea id="questionInput" rows="1" placeholder="Ask a question about your documents..."></textarea>
+          <button class="send-button" id="sendButton" type="submit" aria-label="Send message">➤</button>
+        </form>
+      </footer>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
