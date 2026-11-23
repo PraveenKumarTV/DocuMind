@@ -27,6 +27,11 @@ async function initializeCollection(expectedDimension) {
       await client.createCollection(name, {
         vectors: { size: expectedDimension, distance: 'Cosine' }
       });
+      await client.createPayloadIndex(name, {
+        field_name: 'documentId',
+        field_schema: 'keyword',
+        wait: true
+      });
       return { exists: false, dimension: expectedDimension, name };
     }
 
@@ -35,6 +40,16 @@ async function initializeCollection(expectedDimension) {
     const existingDimension = configured && typeof configured === 'object' && !Array.isArray(configured)
       ? configured.size
       : undefined;
+
+    const payloadSchema = info?.payload_schema || {};
+    if (!payloadSchema.documentId) {
+      await client.createPayloadIndex(name, {
+        field_name: 'documentId',
+        field_schema: 'keyword',
+        wait: true
+      });
+    }
+
     if (existingDimension && existingDimension !== expectedDimension) {
       const error = new Error(`Qdrant collection dimension mismatch: collection has ${existingDimension}, but Gemini embeddings have ${expectedDimension}. No collection was deleted or recreated.`);
       error.statusCode = 409;
